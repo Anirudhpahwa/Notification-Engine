@@ -6,15 +6,15 @@ from models.event import Event
 
 def create_notifications_from_event(db: Session, event: Event) -> List[Notification]:
     """Create notifications from an event."""
-    if not event.payload:
+    if event.payload is None:
         return []
 
     user_id = event.payload.get("user_id")
-    message = event.payload.get("message", "New notification")
-    channel = event.payload.get("channel", "in_app")
-
     if not user_id:
         return []
+
+    message = event.payload.get("message", "New notification")
+    channel = event.payload.get("channel", "in_app")
 
     notification = Notification(
         user_id=user_id,
