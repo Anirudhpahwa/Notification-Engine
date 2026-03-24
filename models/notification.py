@@ -9,7 +9,7 @@ class Notification(BaseModel):
     __tablename__ = "notifications"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(String(36), nullable=False, index=True)
     event_id = Column(String(36), ForeignKey("events.id"), nullable=True, index=True)
     channel = Column(String(20), nullable=False)
     message = Column(Text, nullable=False)
@@ -17,6 +17,5 @@ class Notification(BaseModel):
     scheduled_at = Column(DateTime(timezone=True), nullable=True, index=True)
     retry_count = Column(Integer, default=0, nullable=False)
 
-    user = relationship("User", back_populates="notifications")
     event = relationship("Event", back_populates="notifications")
     logs = relationship("NotificationLog", back_populates="notification")
