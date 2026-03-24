@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.dependencies import get_db
 from core.database import engine, Base
 from schemas.common import HealthCheckResponse
+from routers.event_router import router as event_router
 
 
 app = FastAPI(
@@ -18,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(event_router)
 
 
 @app.on_event("startup")
