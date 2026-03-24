@@ -9,7 +9,8 @@ redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery_app = Celery(
     "notification_engine",
     broker=redis_url,
-    backend=redis_url
+    backend=redis_url,
+    include=["workers.tasks"]
 )
 
 celery_app.conf.update(
