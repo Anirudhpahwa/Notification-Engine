@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/notifications
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=notifications
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build: .
+    command: celery -A core.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/notifications
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
